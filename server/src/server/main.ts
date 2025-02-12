@@ -21,7 +21,7 @@ import { ProcurementRecord } from './db/ProcurementRecord';
 
 const sequelize = new Sequelize({
   dialect: 'sqlite',
-  storage: process.env['SQLITE_DB'] || './db.sqlite3',
+    storage: process.env['SQLITE_DB'] || './db.sqlite3',
 });
 
 sequelize.addModels([Buyer, ProcurementRecord]);
@@ -55,11 +55,11 @@ async function searchRecords(
 ): Promise<ProcurementRecord[]> {
   if (textSearch) {
     return await sequelize.query(
-      'SELECT * FROM procurement_records WHERE title LIKE :textSearch LIMIT :limit OFFSET :offset',
+      'SELECT * FROM procurement_records WHERE title LIKE :textSearch OR description LIKE :textSearch  LIMIT :limit OFFSET :offset',
       {
         model: ProcurementRecord, // by setting this sequelize will return a list of ProcurementRecord objects
         replacements: {
-          textSearch: `${textSearch}%`,
+          textSearch: `%${textSearch}%`,
           offset: offset,
           limit: limit,
         },
@@ -103,6 +103,8 @@ function serializeProcurementRecord(
       id: buyer.id,
       name: buyer.name,
     },
+    value: record.value ?? null,
+    currency: record.currency ?? null,
   };
 }
 

@@ -13,6 +13,8 @@ export type ProcurementRecord = {
     id: string;
     name: string;
   };
+  value: number | null;
+  currency: string | null;
 };
 
 export type SearchRecordsResponse = {
