@@ -1,3 +1,5 @@
+export type StatusDto = "TENDER" | "CONTRACT";
+
 export type SearchRecordsRequest = {
   textSearch?: string;
   limit: number;
@@ -15,6 +17,10 @@ export type ProcurementRecord = {
   };
   value: number | null;
   currency: string | null;
+  status: StatusDto;
+  awardDate: string | null;
+  closeDate: string | null;
+
 };
 
 export type SearchRecordsResponse = {

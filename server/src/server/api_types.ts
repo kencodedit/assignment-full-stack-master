@@ -17,9 +17,14 @@ export type ProcurementRecordDto = {
   publishDate: string;
   value: number | null;
   currency: string | null;
+  status: StatusDto;
+  awardDate: string | null;
+  closeDate: string | null;
 };
 
 export type RecordSearchResponse = {
   records: ProcurementRecordDto[];
   endOfResults: boolean; // this is true when there are no more results to search
 };
+
+export type StatusDto = "TENDER" | "CONTRACT";

@@ -21,7 +21,7 @@ import { ProcurementRecord } from './db/ProcurementRecord';
 
 const sequelize = new Sequelize({
   dialect: 'sqlite',
-    storage: process.env['SQLITE_DB'] || './db.sqlite3',
+  storage: process.env['SQLITE_DB'] || './db.sqlite3',
 });
 
 sequelize.addModels([Buyer, ProcurementRecord]);
@@ -105,6 +105,9 @@ function serializeProcurementRecord(
     },
     value: record.value ?? null,
     currency: record.currency ?? null,
+    status: record.stage,
+    awardDate: record.award_date ?? null,
+    closeDate: record.close_date ?? null,
   };
 }
 
