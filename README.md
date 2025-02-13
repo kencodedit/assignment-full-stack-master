@@ -1,55 +1,28 @@
 # Stotles work sample assignment
 
-## Getting started
+### Areas for improvement/enhancements
 
-This sample codebase consists of a separate client & server code.
+The structure:
+- The client would contain a "components" folder to hold the various components which make up the UI
+- It would also contain an api folder to house the class API function for making API calls
+- It would contain a utils folder for holding all utility functions.
+- A separate folder would contains the tests as well
+- The backend server would contain folders for : controllers (to house the requests), models (database models), routes (for API route definitions), services (to handle business logic i.e functions which are called by the controllers) and utils (to hold any utility functions)
 
-It's set up in a simple way to make it as easy as possible to start making changes,
-the only requirement is having recent versions of `node` & `npm` installed.
 
-This is not a production ready configuration (nor production ready code),
-it's only set up for easy development, including live reload.
+Search:
+- There should be a cross button which when clicked clears the search input
+- Indexing of the buyers_id column can be used to speed up filtering
+- Indexing of the procurement_records title and setting a character limit on the db schema for the procurement_records title can be used to speed up search query
+- The search could be debounced to reduce the number of API calls, this ensures that the search request is triggered only after the user has stopped typing for a specified amount of time
+- Autocomplete/Suggestions: As the user types, the user can get suggestions based on the title and description of the record. Limits should also be used to avoid overwhelming the backend
+- Caching suggestions could also help, by storing popular or recent search results to avoid repetitive calls to the server
+- For really large datasets a search engine such as Elasticsearch could be utilised
 
-To run the client bundler:
+Other aspects:
+- UI/UX (loading indicators): Utilising a loading indicator when fetching of results can help resolve any potential confusions for the user especially when having poor network connections
+- Pagination of the buyer filter. A small set can be initially fetched and then as the user scrolls through (or types), more buyers can be fetched
+- Backend APIs should also return messages and error codes as well not just data as part of the response
+- Caching (with react query for example), can be used to reduce server load
+- A state management solution such as Context API (alongside useMemo and/or React.memo) or Redux could be used to manage the filter and search states effectively
 
-```
-cd client
-npm install
-npm run dev
-```
-
-The processed code will be available at http://localhost:3001
-
-To start the server:
-
-```
-cd server
-npm install
-npm run dev
-```
-
-The server will be available at http://localhost:3000 - the page is automatically configured
-to use the assets served by vite on port 3001.
-
-You should see something similar to this page:
-
-![Search page](./screenshot.png)
-
-### Disabling/Enabling TypeScript
-
-If you prefer to completely disable TypeScript for a file, add `// @ts-nocheck` on the first line.
-If on the other hand you'd like to enable strict type checking, modify `tsconfig.json` according to your needs.
-
-Note that you can import plain JavaScript files that won't be fully typechecked.
-
-### Browsing the database
-
-You should start by looking at the migration in `./migrations` folder.
-If you prefer to browse the DB using SQL, you can use the sqlite command line (just run `sqlite3 ./db.sqlite3`)
-or any other SQL client that supports sqlite.
-
-If for any reason the database becomes unusable, you can rebuild it using `./reset_db.sh` script`.
-
-## The task
-
-All the instructions are available [here](https://www.notion.so/stotles/Full-stack-software-engineer-work-sample-assignment-ae7c64e08f2a42a097d16cee4bc661fc).
