@@ -20,18 +20,18 @@ const { Option } = Select;
 const PAGE_SIZE = 10;
 
 function RecordSearchPage() {
-  const [page, setPage] = React.useState<number>(1);
-  const [searchFilters, setSearchFilters] = React.useState<SearchFilters>({
+  const [page, setPage] = useState<number>(1);
+  const [searchFilters, setSearchFilters] = useState<SearchFilters>({
     query: "",
   });
   const [buyers, setBuyers] = useState([]);
   const [selectedBuyer, setSelectedBuyer] = useState(null);
 
-  const [records, setRecords] = React.useState<
+  const [records, setRecords] = useState<
     ProcurementRecord[] | undefined
   >();
 
-  const [reachedEndOfSearch, setReachedEndOfSearch] = React.useState(false);
+  const [reachedEndOfSearch, setReachedEndOfSearch] = useState(false);
 
   useEffect(() => {
     fetchBuyers();
@@ -41,17 +41,16 @@ function RecordSearchPage() {
     fetchRecords();
   }, [searchFilters, page]);
 
-  const handleChangeFilters = React.useCallback((newFilters: SearchFilters) => {
+  const handleChangeFilters = useCallback((newFilters: SearchFilters) => {
     setSearchFilters(newFilters);
     setPage(1); // reset pagination state
   }, []);
 
-  const handleLoadMore = React.useCallback(() => {
+  const handleLoadMore = useCallback(() => {
     setPage((page) => page + 1);
   }, []);
 
   const handleBuyerChange = useCallback((value) => {
-    console.log("CHANGE", value);
     setSelectedBuyer(value);
     setSearchFilters((prev) => ({ ...prev, buyer: value }));
     setPage(1);
