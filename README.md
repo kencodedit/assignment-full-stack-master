@@ -1,5 +1,7 @@
 # Stotles work sample assignment
 
+I have purposely kept my solution lightweight and straightforward.
+Below are areas in which i believe could be improved if this was for a more production based application.
 ### Areas for improvement/enhancements
 
 The structure:
