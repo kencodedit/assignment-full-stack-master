@@ -1,5 +1,5 @@
 import { Input } from "antd";
-import React from "react";
+import React, { useCallback } from "react";
 
 export type SearchFilters = {
   query: string;
@@ -13,7 +13,7 @@ type Props = {
 function RecordSearchFilters(props: Props) {
   const { filters, onChange } = props;
 
-  const handleQueryChange = React.useCallback(
+  const handleQueryChange = useCallback(
     (e: React.FormEvent<HTMLInputElement>) => {
       onChange({
         ...filters,

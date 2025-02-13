@@ -1,4 +1,5 @@
 import express, { request } from 'express';
+import { QueryTypes } from 'sequelize'
 
 import { Sequelize } from 'sequelize-typescript';
 import {
@@ -43,42 +44,34 @@ app.use(express.json());
 
 type RecordSearchFilters = {
   textSearch?: string;
+  buyerId?: string | null;
 };
 
-/**
- * Queries the database for procurement records according to the search filters.
- */
 async function searchRecords(
-  { textSearch }: RecordSearchFilters,
+  { textSearch, buyerId }: RecordSearchFilters,
   offset: number,
   limit: number
 ): Promise<ProcurementRecord[]> {
-  if (textSearch) {
-    return await sequelize.query(
-      'SELECT * FROM procurement_records WHERE title LIKE :textSearch LIMIT :limit OFFSET :offset',
-      {
-        model: ProcurementRecord, // by setting this sequelize will return a list of ProcurementRecord objects
-        replacements: {
-          textSearch: `${textSearch}%`,
-          offset: offset,
-          limit: limit,
-        },
-      }
-    );
-  } else {
-    return await sequelize.query(
-      'SELECT * FROM procurement_records LIMIT :limit OFFSET :offset',
-      {
-        model: ProcurementRecord,
-        replacements: {
-          offset: offset,
-          limit: limit,
-        },
-      }
-    );
-  }
-}
+  let query = 'SELECT * FROM procurement_records WHERE 1=1';
+  const replacements: any = { offset, limit };
 
+  if (textSearch) {
+    query += ' AND (title LIKE :textSearch OR description LIKE :textSearch)';
+    replacements.textSearch = `%${textSearch}%`;
+  }
+
+  if (buyerId !== undefined && buyerId !== null) {
+    query += ' AND buyer_id = :buyerId';
+    replacements.buyerId = buyerId;
+  }
+
+  query += ' LIMIT :limit OFFSET :offset';
+
+  return await sequelize.query(query, {
+    model: ProcurementRecord,
+    replacements,
+  });
+}
 /**
  * Converts a DB-style ProcurementRecord object to an API type.
  * Assumes that all related objects (buyers) are prefetched upfront and passed in the `buyersById` map
@@ -103,6 +96,11 @@ function serializeProcurementRecord(
       id: buyer.id,
       name: buyer.name,
     },
+    value: record.value ?? null,
+    currency: record.currency ?? null,
+    status: record.stage,
+    awardDate: record.award_date ?? null,
+    closeDate: record.close_date ?? null,
   };
 }
 
@@ -134,7 +132,6 @@ async function serializeProcurementRecords(
   const buyersById = new Map(buyers.map((b) => [b.id, b]));
   return records.map((r) => serializeProcurementRecord(r, buyersById));
 }
-
 /**
  * This endpoint implements basic way to paginate through the search results.
  * It returns a `endOfResults` flag which is true when there are no more records to fetch.
@@ -142,20 +139,17 @@ async function serializeProcurementRecords(
 app.post('/api/records', async (req, res) => {
   const requestPayload = req.body as RecordSearchRequest;
 
-  const { limit, offset } = requestPayload;
+  const { limit, offset, textSearch, buyerId } = requestPayload;
 
   if (limit === 0 || limit > 100) {
     res.status(400).json({ error: 'Limit must be between 1 and 100.' });
     return;
   }
 
-  // We fetch one more record than requested.
-  // If number of returned records is larger than
-  // the requested limit it means there is more data than requested
-  // and the client can fetch the next page.
   const records = await searchRecords(
     {
-      textSearch: requestPayload.textSearch,
+      textSearch,
+      buyerId,
     },
     offset,
     limit + 1
@@ -163,12 +157,33 @@ app.post('/api/records', async (req, res) => {
 
   const response: RecordSearchResponse = {
     records: await serializeProcurementRecords(
-      records.slice(0, limit) // only return the number of records requested
+      records.slice(0, limit)
     ),
-    endOfResults: records.length <= limit, // in this case we've reached the end of results
+    endOfResults: records.length <= limit,
   };
 
-  res.json(response);
+  res.status(200).json(response);
+});
+
+app.get('/api/buyers', async (req, res) => {
+  try {
+    // Using Sequelize with raw SQL query to fetch all buyers
+    const buyers = await sequelize.query(
+      `
+      SELECT *
+      FROM buyers
+      ORDER BY name ASC
+      `,
+      {
+        model: Buyer,
+        type: QueryTypes.SELECT,
+      }
+    );
+    res.status(200).json({buyers});
+  } catch (error) {
+    console.error('Error fetching buyers:', error);
+    res.status(500).json({ error: 'An error occurred while fetching buyers.' });
+  }
 });
 
 app.listen(app.get('port'), () => {

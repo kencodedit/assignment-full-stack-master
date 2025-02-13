@@ -1,5 +1,8 @@
+export type StatusDto = "TENDER" | "CONTRACT";
+
 export type SearchRecordsRequest = {
   textSearch?: string;
+  buyerId?: string | null;
   limit: number;
   offset: number;
 };
@@ -13,6 +16,12 @@ export type ProcurementRecord = {
     id: string;
     name: string;
   };
+  value: number | null;
+  currency: string | null;
+  status: StatusDto;
+  awardDate: string | null;
+  closeDate: string | null;
+
 };
 
 export type SearchRecordsResponse = {
@@ -31,6 +40,10 @@ class Api {
       },
       body: JSON.stringify(request),
     });
+    return await response.json();
+  }
+  async getBuyers(): Promise<{ buyers: { id: string; name: string }[] }> {
+    const response = await fetch("/api/buyers");
     return await response.json();
   }
 }
