@@ -1,5 +1,4 @@
 import { ProcurementRecord } from './Api';
-import { StatusDto } from './Api';
 
 // Utility function to format value based on currency
 function formatCurrency(value: number | null, currency: string | null): string {

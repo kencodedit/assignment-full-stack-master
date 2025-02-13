@@ -2,6 +2,7 @@ export type StatusDto = "TENDER" | "CONTRACT";
 
 export type SearchRecordsRequest = {
   textSearch?: string;
+  buyerId?: string | null;
   limit: number;
   offset: number;
 };
@@ -39,6 +40,10 @@ class Api {
       },
       body: JSON.stringify(request),
     });
+    return await response.json();
+  }
+  async getBuyers(): Promise<{ buyers: { id: string; name: string }[] }> {
+    const response = await fetch("/api/buyers");
     return await response.json();
   }
 }

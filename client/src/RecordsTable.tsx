@@ -56,7 +56,7 @@ function RecordsTable(props: Props) {
   }, []);
   return (
     <>
-      <Table columns={columns} dataSource={records} pagination={false} />
+      <Table columns={columns} dataSource={records} pagination={false} rowKey="id"/>
       <ProcurementRecordPreviewModal
         record={previewedRecord}
         onClose={() => setPreviewedRecord(undefined)}
